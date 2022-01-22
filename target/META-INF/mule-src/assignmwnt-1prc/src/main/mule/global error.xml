@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<error-handler name="global_errorError_Handler" doc:id="c72ae65f-0410-4eb9-bdd7-600651c8e1b6" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="10f9497c-c292-4f0e-99ae-b244845150d0" type="NO:USERID">
+			<ee:transform doc:name="Transform Message" doc:id="9a2c5cd3-a1e6-4783-8547-df7abe7e7334" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	 "error": "You didn't mention any USERID in URL",
+
+   "message": "Value for at least one user id should be present in the request",
+
+   "detail": "please give like this in URL userId1=UID1766,userId2=UID1205,userId3=UID1303"
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="3b5591ca-d375-4963-b658-3a244f6a1571" type="ANY">
+			<ee:transform doc:name="Transform Message" doc:id="34ae497a-a8d2-4aeb-aae9-92b2ce3afedb" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: error.muleMessage.typedValue default error.description
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+	</error-handler>
+</mule>

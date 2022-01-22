@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="a5dcbdf9-d106-45ff-8001-6c853dffbb3b" >
+		<http:request-connection host="localhost" port="8081" protocol="HTTPS">
+			<tls:context >
+				<tls:trust-store path="client-truststore.jks" password="mulesoft" type="jks" insecure="true" />
+			</tls:context>
+		</http:request-connection>
+	</http:request-config>
+	<flow name="assignmwnt-1prcFlow" doc:id="aecf87da-02fc-49b7-863f-164512143d83" >
+		<validation:is-not-blank-string doc:name="Is not blank string" doc:id="242ea8e7-0bfa-4a12-99f9-0d6a146bd611" value="#[attributes.queryString]">
+			<error-mapping targetType="NO:USERID" />
+		</validation:is-not-blank-string>
+		<http:request method="GET" doc:name="Request" doc:id="c2195f90-25bf-42c9-9d99-904a3a24e136" config-ref="HTTP_Request_configuration" path="/api/details" responseTimeout="1800000">
+			<http:query-params ><![CDATA[#[output application/json
+---
+
+	{
+	("userId1" : attributes.queryParams.userId1) if(attributes.queryParams.userId1 != null),
+	("userId2" : attributes.queryParams.userId2) if(attributes.queryParams.userId2 != null),
+	("userId3" : attributes.queryParams.userId3) if(attributes.queryParams.userId3 != null)
+}]]]></http:query-params>
+		</http:request>
+		<error-handler ref="global_errorError_Handler" />
+	</flow>
+</mule>
